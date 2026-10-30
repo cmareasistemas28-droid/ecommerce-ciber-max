@@ -9,8 +9,11 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.ERROR)
+@Mapper(componentModel = "spring",
+        unmappedSourcePolicy = ReportingPolicy.IGNORE,
+        unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface EmpleadoMapper {
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "usuario", ignore = true)
     @Mapping(target = "foto", ignore = true)
@@ -19,11 +22,12 @@ public interface EmpleadoMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Empleado toEmpleado(EmpleadoCreateRequest request);
 
-    @Mapping(target = "usuarioId", source = "usuario.id")
+
     @Mapping(target = "email", source = "usuario.email")
     @Mapping(target = "roles", source = "usuario.roles")
     @Mapping(target = "edad", source = "edad")
     EmpleadoResponse toEmpleadoResponse(Empleado empleado);
+
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "usuario", ignore = true)
