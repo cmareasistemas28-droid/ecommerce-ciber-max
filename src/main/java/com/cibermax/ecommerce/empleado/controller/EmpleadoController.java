@@ -38,13 +38,8 @@ public class EmpleadoController {
     }
 
     @GetMapping
-    public String listar(
-            @PageableDefault(size = 10, sort = "apellidos")
-            Pageable pageable,
-            Model model
-    ) {
+    public String listar(@PageableDefault(size = 10, sort = "apellidos") Pageable pageable, Model model) {
         model.addAttribute("pagina", empleadoService.listar(pageable));
-
         return "admin/empleados/lista";
     }
 
@@ -68,39 +63,25 @@ public class EmpleadoController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String crear(
-            @Valid @ModelAttribute("empleado")
-            EmpleadoCreateRequest request,
-            BindingResult result,
-            RedirectAttributes redirect
-    ) {
+    public String crear(@Valid @ModelAttribute("empleado") EmpleadoCreateRequest request, BindingResult result, RedirectAttributes redirect) {
         if (result.hasErrors()) {
             return "admin/empleados/crear";
         }
-
         try {
             empleadoService.crear(request);
         } catch (IllegalArgumentException e) {
             result.reject("empleado.crear", e.getMessage());
             return "admin/empleados/crear";
         }
-
-        redirect.addFlashAttribute(
-                "mensaje", "Empleado registrado correctamente"
-        );
-
+        redirect.addFlashAttribute("mensaje", "Empleado registrado correctamente");
         return "redirect:/admin/empleados";
     }
 
     @GetMapping("/{id}")
-    public String detalle(
-            @PathVariable UUID id,
-            Model model
-    ) {
+    public String detalle(@PathVariable UUID id, Model model) {
         model.addAttribute(
                 "empleado", empleadoService.buscarPorId(id)
         );
-
         return "admin/empleados/detalle";
     }
 

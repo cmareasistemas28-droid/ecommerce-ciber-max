@@ -53,16 +53,11 @@ public class EmpleadoService {
         }
 
         if (usuarioRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException(
-                    "El correo ya está registrado"
-            );
+            throw new IllegalArgumentException("El correo ya está registrado");
         }
-
         Usuario usuario = new Usuario();
         usuario.setEmail(email);
-        usuario.setPassword(
-                passwordEncoder.encode(request.password())
-        );
+        usuario.setPassword(passwordEncoder.encode(request.password()));
         usuario.setAuthProvider(AuthProvider.LOCAL);
         usuario.setRoles(new HashSet<>(request.roles()));
         usuario.setActive(true);
@@ -85,50 +80,32 @@ public class EmpleadoService {
     }
 
     @Transactional
-    public EmpleadoResponse actualizar(
-            UUID id,
-            @Valid EmpleadoUpdateRequest request
-    ) {
+    public EmpleadoResponse actualizar(UUID id, @Valid EmpleadoUpdateRequest request) {
         Empleado empleado = obtenerEmpleado(id);
         Usuario usuario = empleado.getUsuario();
-
         String email = normalizarEmail(request.email());
-
-        if (empleadoRepository.existsByDniAndIdNot(
-                request.dni(), id
-        )) {
+        if (empleadoRepository.existsByDniAndIdNot(request.dni(), id)) {
             throw new IllegalArgumentException(
                     "El DNI ya está registrado"
             );
         }
-
-        if (usuarioRepository.existsByEmailAndIdNot(
-                email, usuario.getId()
-        )) {
+        if (usuarioRepository.existsByEmailAndIdNot(email, usuario.getId())) {
             throw new IllegalArgumentException(
                     "El correo ya está registrado"
             );
         }
-
         empleadoMapper.toUpdate(request, empleado);
-
         usuario.setEmail(email);
         usuario.getRoles().clear();
         usuario.getRoles().addAll(request.roles());
-
         // Sin foto nueva, conserva la actual.
         if (request.foto() != null && !request.foto().isEmpty()) {
-            empleado.setFoto(
-                    fileStorageService.guardar(request.foto())
-            );
+            empleado.setFoto(fileStorageService.guardar(request.foto()));
         }
-
         usuarioRepository.save(usuario);
         empleadoRepository.saveAndFlush(empleado);
-
         return empleadoMapper.toEmpleadoResponse(empleado);
     }
-
     public EmpleadoResponse buscarPorId(UUID id) {
         Empleado empleado = obtenerEmpleado(id);
 

@@ -10,6 +10,11 @@ spring:
   jpa:
     open-in-view: false
 
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION}
+
 app:
   storage:
     location: ${UPLOAD_DIR:./uploads}
