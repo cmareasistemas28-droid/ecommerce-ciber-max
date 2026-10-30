@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Empleados</title>
+</head>
+<body>
+<main>
+    <h1>Empleados</h1>
+
+    <p th:if="${mensaje}" th:text="${mensaje}" role="status"></p>
+
+    <a th:href="@{/admin/empleados/nuevo}">Registrar empleado</a>
+
+    <table>
+        <thead>
+        <tr>
+            <th>DNI</th>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th>Correo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="empleado : ${pagina.content}">
+            <td th:text="${empleado.dni}"></td>
+            <td th:text="${empleado.nombres}"></td>
+            <td th:text="${empleado.apellidos}"></td>
+            <td th:text="${empleado.email}"></td>
+            <td th:text="${empleado.active ? 'Activo' : 'Inactivo'}"></td>
+            <td>
+                <a th:href="@{/admin/empleados/{id}(id=${empleado.id})}">
+                    Ver
+                </a>
+
+                <a th:href="@{/admin/empleados/{id}/editar(id=${empleado.id})}">
+                    Editar
+                </a>
+
+                <form th:if="${empleado.active}"
+                      th:action="@{/admin/empleados/{id}/desactivar(id=${empleado.id})}"
+                      method="post">
+                    <button type="submit">Desactivar</button>
+                </form>
+
+                <form th:unless="${empleado.active}"
+                      th:action="@{/admin/empleados/{id}/activar(id=${empleado.id})}"
+                      method="post">
+                    <button type="submit">Activar</button>
+                </form>
+            </td>
+        </tr>
+
+        <tr th:if="${pagina.empty}">
+            <td colspan="6">No hay empleados registrados.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <nav aria-label="Paginación" th:if="${pagina.totalPages > 0}">
+        <a th:if="${pagina.hasPrevious()}"
+           th:href="@{/admin/empleados(page=${pagina.number - 1},size=${pagina.size})}">
+            Anterior
+        </a>
+
+        <span th:text="|Página ${pagina.number + 1} de ${pagina.totalPages}|"></span>
+
+        <a th:if="${pagina.hasNext()}"
+           th:href="@{/admin/empleados(page=${pagina.number + 1},size=${pagina.size})}">
+            Siguiente
+        </a>
+    </nav>
+</main>
+</body>
+</html>

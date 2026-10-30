@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Detalle del empleado</title>
+</head>
+<body>
+<main>
+    <h1>Detalle del empleado</h1>
+
+    <img th:src="${empleado.foto == null}
+              ? @{/images/avatar-default.png}
+              : @{/admin/empleados/{id}/foto(id=${empleado.id})}"
+         alt="Foto del empleado"
+         width="160" height="160"
+         style="object-fit: cover;">
+
+    <dl>
+        <dt>Nombres</dt>
+        <dd th:text="${empleado.nombres}"></dd>
+
+        <dt>Apellidos</dt>
+        <dd th:text="${empleado.apellidos}"></dd>
+
+        <dt>DNI</dt>
+        <dd th:text="${empleado.dni}"></dd>
+
+        <dt>Fecha de nacimiento</dt>
+        <dd th:text="${empleado.fechaNacimiento != null
+            ? #temporals.format(empleado.fechaNacimiento, 'dd/MM/yyyy')
+            : 'Sin registrar'}"></dd>
+
+        <dt>Edad</dt>
+        <dd th:text="${empleado.edad != null
+            ? empleado.edad + ' años'
+            : 'Sin registrar'}"></dd>
+
+        <dt>Teléfono</dt>
+        <dd th:text="${empleado.telefono}"></dd>
+
+        <dt>Dirección</dt>
+        <dd th:text="${empleado.direccion}"></dd>
+
+        <dt>Referencia</dt>
+        <dd th:text="${empleado.referencia}"></dd>
+
+        <dt>Correo de acceso</dt>
+        <dd th:text="${empleado.email}"></dd>
+
+        <dt>Estado del empleado</dt>
+        <dd th:text="${empleado.active ? 'Activo' : 'Inactivo'}"></dd>
+
+        <dt>Roles</dt>
+        <dd>
+            <ul>
+                <li th:each="rol : ${empleado.roles}"
+                    th:text="${rol.name()}"></li>
+            </ul>
+        </dd>
+
+        <dt>Fecha de registro</dt>
+        <dd th:text="${empleado.createdAt != null
+            ? #temporals.format(empleado.createdAt, 'dd/MM/yyyy HH:mm')
+            : 'Sin registrar'}"></dd>
+
+        <dt>Última actualización</dt>
+        <dd th:text="${empleado.updatedAt != null
+            ? #temporals.format(empleado.updatedAt, 'dd/MM/yyyy HH:mm')
+            : 'Sin actualizaciones'}"></dd>
+    </dl>
+
+    <a th:href="@{/admin/empleados/{id}/editar(id=${empleado.id})}">
+        Editar
+    </a>
+
+    <a th:href="@{/admin/empleados}">Volver al listado</a>
+</main>
+</body>
+</html>
