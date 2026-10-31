@@ -12,7 +12,14 @@ public enum Rol {
             Permission.SUB_CATEGORIA_READ,
             Permission.SUB_CATEGORIA_READ_ID,
             Permission.SUB_CATEGORIA_CREATE,
-            Permission.SUB_CATEGORIA_UPDATE
+            Permission.SUB_CATEGORIA_UPDATE,
+
+            Permission.EMPLEADO_READ,
+            Permission.EMPLEADO_READ_ID,
+            Permission.EMPLEADO_CREATE,
+            Permission.EMPLEADO_UPDATE,
+            Permission.EMPLEADO_DESACTIVAR,
+            Permission.EMPLEADO_ACTIVAR
     )),
     VENDEDOR(Set.of(
 

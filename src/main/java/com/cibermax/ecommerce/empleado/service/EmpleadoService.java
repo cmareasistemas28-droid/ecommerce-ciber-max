@@ -12,6 +12,7 @@ import com.cibermax.ecommerce.empleado.repository.EmpleadoRepository;
 import com.cibermax.ecommerce.storage.service.FileStorageService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,7 @@ public class EmpleadoService {
         this.empleadoMapper = empleadoMapper;
         this.fileStorageService = fileStorageService;
     }
+    @PreAuthorize("hasAuthority('EMPLEADO_CREATE')")
     @Transactional
     public EmpleadoResponse crear(
             @Valid EmpleadoCreateRequest request
@@ -78,7 +80,7 @@ public class EmpleadoService {
 
         return empleadoMapper.toEmpleadoResponse(empleado);
     }
-
+    @PreAuthorize("hasAuthority('EMPLEADO_UPDATE')")
     @Transactional
     public EmpleadoResponse actualizar(UUID id, @Valid EmpleadoUpdateRequest request) {
         Empleado empleado = obtenerEmpleado(id);
@@ -106,17 +108,18 @@ public class EmpleadoService {
         empleadoRepository.saveAndFlush(empleado);
         return empleadoMapper.toEmpleadoResponse(empleado);
     }
+    @PreAuthorize("hasAuthority('EMPLEADO_READ_ID')")
     public EmpleadoResponse buscarPorId(UUID id) {
         Empleado empleado = obtenerEmpleado(id);
 
         return empleadoMapper.toEmpleadoResponse(empleado);
     }
-
+    @PreAuthorize("hasAuthority('EMPLEADO_READ')")
     public Page<EmpleadoResponse> listar(Pageable pageable) {
         return empleadoRepository.findAll(pageable)
                 .map(empleadoMapper::toEmpleadoResponse);
     }
-
+    @PreAuthorize("hasAuthority('EMPLEADO_DESACTIVAR')")
     @Transactional
     public void desactivar(UUID id) {
         Empleado empleado = obtenerEmpleado(id);
@@ -124,7 +127,7 @@ public class EmpleadoService {
 
         empleadoRepository.save(empleado);
     }
-
+    @PreAuthorize("hasAuthority('EMPLEADO_ACTIVAR')")
     @Transactional
     public void activar(UUID id) {
         Empleado empleado = obtenerEmpleado(id);
@@ -132,7 +135,7 @@ public class EmpleadoService {
 
         empleadoRepository.save(empleado);
     }
-
+    @PreAuthorize("hasAuthority('EMPLEADO_READ')")
     private Empleado obtenerEmpleado(UUID id) {
         return empleadoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(

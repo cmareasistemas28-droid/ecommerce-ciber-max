@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 public record EmpleadoCreateRequest(
@@ -15,10 +16,10 @@ public record EmpleadoCreateRequest(
         @NotBlank(message = "El DNI es obligatorio")
         @Pattern(regexp = "\\d{8}", message = "El DNI debe tener 8 dígitos")
         String dni,
-        @NotNull
+        @NotNull(message = "Ingresa tu fecha de nacimiento")
         @Past(message = "La fecha de nacimiento debe ser anterior a hoy")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-        String fechaNacimiento,
+        LocalDate fechaNacimiento,
         @Size(max = 20)
         String telefono,
         @Size(max = 255)
