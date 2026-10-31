@@ -12,4 +12,5 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, UUID> {
     boolean existsByDni(String dni);
 
     boolean existsByDniAndIdNot(String dni, UUID id);
+    Optional<Empleado> findByUsuarioId(UUID usuarioId);
 }

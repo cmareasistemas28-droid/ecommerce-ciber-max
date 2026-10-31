@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,15 @@ public class EmpleadoController {
     @ModelAttribute("rolesDisponibles")
     public Rol[] rolesDisponibles() {
         return Rol.values();
+    }
+
+    @ModelAttribute("esAdministrador")
+    public boolean esAdministrador(Authentication authentication) {
+        return authentication != null
+                && authentication.getAuthorities().stream().anyMatch(
+                authority -> authority.getAuthority()
+                        .equals("ROLE_ADMINISTRADOR")
+        );
     }
 
     @GetMapping
@@ -63,10 +73,21 @@ public class EmpleadoController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String crear(@Valid @ModelAttribute("empleado") EmpleadoCreateRequest request, BindingResult result, RedirectAttributes redirect) {
+    public String crear(
+            @Valid @ModelAttribute("empleado") EmpleadoCreateRequest request,
+            BindingResult result,
+            Authentication authentication,
+            RedirectAttributes redirect
+    ) {
         if (result.hasErrors()) {
             return "admin/empleados/crear";
         }
+
+        boolean administrador = esAdministrador(authentication);
+        if (!administrador) {
+            request = registroPublico(request);
+        }
+
         try {
             empleadoService.crear(request);
         } catch (IllegalArgumentException e) {
@@ -74,7 +95,27 @@ public class EmpleadoController {
             return "admin/empleados/crear";
         }
         redirect.addFlashAttribute("mensaje", "Empleado registrado correctamente");
-        return "redirect:/admin/empleados";
+        return administrador
+                ? "redirect:/admin/empleados"
+                : "redirect:/admin/login?registered";
+    }
+
+    private EmpleadoCreateRequest registroPublico(
+            EmpleadoCreateRequest request
+    ) {
+        return new EmpleadoCreateRequest(
+                request.nombres(),
+                request.apellidos(),
+                request.dni(),
+                request.fechaNacimiento(),
+                request.telefono(),
+                request.direccion(),
+                request.referencia(),
+                request.foto(),
+                request.email(),
+                request.password(),
+                Set.of(Rol.VENDEDOR)
+        );
     }
 
     @GetMapping("/{id}")
